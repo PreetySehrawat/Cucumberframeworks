@@ -1,0 +1,58 @@
+[
+  {
+    "line": 1,
+    "elements": [
+      {
+        "line": 3,
+        "name": "Amazon Search for Fiction books",
+        "description": "",
+        "id": "test-amazon-search;amazon-search-for-fiction-books",
+        "type": "scenario",
+        "keyword": "Scenario",
+        "steps": [
+          {
+            "result": {
+              "duration": 144508644,
+              "status": "passed"
+            },
+            "line": 4,
+            "name": "Amazon website is open",
+            "match": {
+              "location": "amasearchstepdef.amazon_website_is_open()"
+            },
+            "keyword": "Given "
+          },
+          {
+            "result": {
+              "duration": 312529,
+              "status": "passed"
+            },
+            "line": 5,
+            "name": "search is enabled",
+            "match": {
+              "location": "amasearchstepdef.search_is_enabled()"
+            },
+            "keyword": "When "
+          },
+          {
+            "result": {
+              "duration": 95452,
+              "status": "passed"
+            },
+            "line": 6,
+            "name": "all fiction books should be listed",
+            "match": {
+              "location": "amasearchstepdef.all_fiction_books_should_be_listed()"
+            },
+            "keyword": "Then "
+          }
+        ]
+      }
+    ],
+    "name": "Test Amazon Search",
+    "description": "",
+    "id": "test-amazon-search",
+    "keyword": "Feature",
+    "uri": "amasearch.feature"
+  }
+]
