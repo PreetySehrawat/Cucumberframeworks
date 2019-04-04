@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="20735" started-at="2019-04-04T10:45:32Z" finished-at="2019-04-04T10:45:53Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="20735" started-at="2019-04-04T10:45:32Z" finished-at="2019-04-04T10:45:53Z">
+      <class name="runner.testrunner">
+        <test-method status="PASS" signature="setUP()[pri:0, instance:runner.testrunner@192b07fd]" name="setUP" is-config="true" duration-ms="378" started-at="2019-04-04T10:45:32Z" finished-at="2019-04-04T10:45:33Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUP -->
+        <test-method status="PASS" signature="login(cucumber.api.testng.CucumberFeatureWrapper)[pri:0, instance:runner.testrunner@192b07fd]" name="login" duration-ms="20195" started-at="2019-04-04T10:45:33Z" description="login" data-provider="features" finished-at="2019-04-04T10:45:53Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[Test Amazon Search]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- login -->
+        <test-method status="PASS" signature="tearDown()[pri:0, instance:runner.testrunner@192b07fd]" name="tearDown" is-config="true" duration-ms="19" started-at="2019-04-04T10:45:53Z" finished-at="2019-04-04T10:45:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- runner.testrunner -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
