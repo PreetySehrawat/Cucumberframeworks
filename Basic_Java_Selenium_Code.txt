@@ -1,0 +1,538 @@
+JOB AIDS
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************
+		//browser Initialization
+		System.setProperty("webdriver.chrome.driver", ".\\driver\\chromedriver.exe");
+		driver = new ChromeDriver();
+		
+		//Implicit Wait
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+		
+		//Explicit Wait
+		
+		//Fluent Wait
+		
+		
+		driver.navigate().to("https://amazon.in");
+		driver.manage().window().maximize();
+		
+		String title = driver.getTitle();
+		
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************
+
+		//Usage of action class  - import org.openqa.selenium.interactions.Actions;
+		//Thread is important as action class methods takes time to execute
+		//Some more examples of Actions class - clickandhold, draganddrop 
+		WebElement category = driver.findElement(By.cssSelector(("#nav-link-shopall > span.nav-line-2 > span")));
+		Actions action = new Actions(driver);
+		action.moveToElement(category).perform();
+		Thread.sleep(2000);
+		
+		WebElement books = driver.findElement((By.cssSelector("#nav-flyout-shopAll > div.nav-template.nav-flyout-content.nav-tpl-itemList > span:nth-child(16) > span.nav-text")));
+		action.moveToElement(books);
+		action.click().perform();
+		Thread.sleep(2000);
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************		
+		//Switching to different windows
+		java.util.Set<String> handles = driver.getWindowHandles();
+		String winHandle1 = driver.getWindowHandle();
+		handles.remove(winHandle1);
+		String winHandle= handles.iterator().next();
+		String winHandle2 = " ";
+		if(winHandle!=winHandle1)
+		{
+			winHandle2 = winHandle;
+			driver.switchTo().window(winHandle2);
+		}
+
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************		
+		//Create your own Xpath
+		//Sample HTML code - <span class="nav-line-2">Category<span class="nav-icon nav-arrow" style="visibility: visible;"></span> 
+		//Press Cntrl F and search for created xpath, it should return 1 of 1, which means unique
+		driver.findElement(By.xpath("//span[text()='Category']");
+		driver.findElement(By.xpath("//span[contains(text(),'Category')];
+		driver.findElement(By.xpath("//span[@class='nav-line-2']");
+		
+		//Usage of parent, preceding-sibling and forward sibling attributes while finding xpath
+		//Create own xpath instead of using writing nested for loop while reading from a table
+		//Click at check box in a table whose next column as value as "Test2 Test2" at 5th row, column 2 and html tag as <a>
+		//forward-sibling can also be used to click on next column
+		String XP1 = "//a[text()='Test2 Test2']//parent::td[@class=' ']//preceding-sibling::td[@class= ' ']
+		
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************		
+		//Usage of Java script executor  - import org.openqa.selenium.JavascriptExecutor;
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("windows.scrollBy(0,600)");
+		//Scroll to bottom of document
+		js.executeScript("window.scrollTo(0,document.body.scrollHeight)");
+		//Scroll until the element is visible
+		WebElement bTitle1 = driver.findElement(By.id("productTitle"));
+		js.executeScript("arguments[0].scrollIntoView()", bTitle1);
+		//scroll to given location by identifying the location of element first
+		WebElement element1 = driver.findElement(By.id("productPromotions"));
+		int location = element1.getLocation().getY();
+		js.executeScript("window.scrollBy(0,"+location+")");
+		
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************
+		//Extent Reports - download 
+		
+		<!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
+		<dependency>
+			<groupId>com.aventstack</groupId>
+			<artifactId>extentreports</artifactId>
+			<version>4.0.9</version>
+		</dependency>
+
+		ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter("filePath");
+		ExtentXReporter extentxReporter = new ExtentXReporter("host");
+
+		ExtentReports extent = new ExtentReports();
+		extent.attachReporter(htmlReporter, extentxReporter);
+
+		extent.createTest("Test1").pass("pass");
+		extent.createTest("Test2").error("error");
+
+		public class ExtentTestNGReportBuilder {
+			private ThreadLocal<ExtentTest> parentTest;
+			private ThreadLocal<ExtentTest> test;
+
+			@BeforeClass
+			public synchronized void beforeClass() {
+				ExtentTest parent = ExtentTestManager.createTest(getClass().getName());
+				parentTest.set(parent);
+			}
+
+			@BeforeMethod
+			public synchronized void beforeMethod(Method method) {
+				ExtentTest child = parentTest.get().createNode(method.getName());
+				test.set(child);
+			}
+
+			@AfterMethod
+			public synchronized void afterMethod(ITestResult result) {
+				if (result.getStatus() == ITestResult.FAILURE)
+					test.get().fail(result.getThrowable());
+				else if (result.getStatus() == ITestResult.SKIP)
+					test.get().skip(result.getThrowable());
+				else
+					test.get().pass("Test passed");
+
+				ExtentManager.getExtent().flush();
+			}
+
+		}
+		
+****************************************************************************************************************************************************************		
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+
+
+public class FreeCRMTest {
+
+	
+	public ExtentReports extent;
+	public ExtentTest extentTest;
+	public ExtentHtmlReporter htmlextent = null;
+	public WebDriver driver;
+	
+	
+	@BeforeTest()
+	public void setExtent()
+	{
+		extent = new ExtentReports();
+		htmlextent = new ExtentHtmlReporter(System.getProperty("user.dir") + "/test-output/ExtentReport.html");
+		extent.attachReporter(htmlextent);
+		extent.setSystemInfo("Host Name", "Preety Windows");
+		extent.setSystemInfo("User Name", "Preety Sehrawat");
+		extent.setSystemInfo("Environment", "QA");
+	}
+	
+	
+	@AfterTest()
+	public void endReport()
+	{
+		extent.flush();
+		extent.removeTest(extentTest);
+		
+	}
+	
+	public String getScreenshot(WebDriver driver, String screenshotName) throws IOException
+	{
+		String dateName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+		TakesScreenshot ts = (TakesScreenshot) driver;
+		File source = ts.getScreenshotAs(OutputType.FILE);
+		String destination = System.getProperty("user.dir") + "/FailedTestsScreenshots/" + screenshotName + dateName + ".png";
+		
+		File finalDestination = new File(destination);
+		FileUtils.copyFile(source, finalDestination);
+		
+		return destination;
+	}
+	
+	@BeforeMethod()
+	public void setUp()
+	{
+		System.setProperty("webdriver.chrome.driver", "config/chromedriver.exe");
+		
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.manage().deleteAllCookies();
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(40, TimeUnit.SECONDS);
+		
+		driver.get("https://www.freecrm.com");
+	}
+	
+	@Test()
+	public void freeCrmTitleTest() {
+		extentTest = extent.createTest("FreeCRMTitleTest");
+		String title = driver.getTitle();
+		System.out.println(title);
+		Assert.assertEquals(title, "Free CRM software in the cloud");
+		
+	}
+	
+	
+	@AfterMethod()
+	public void tearDown(ITestResult result) throws IOException
+	{
+		if(result.getStatus() == ITestResult.FAILURE)
+		{ 
+			extentTest.log(Status.FAIL, "Test Case FAILED is" + result.getName());
+			extentTest.log(Status.FAIL,  "Test Case FAILED is" + result.getThrowable());
+			
+			String screenshotpath = this.getScreenshot(driver, result.getName());
+			extentTest.log(Status.FAIL , "Test Case FAIL" + extentTest.addScreencastFromPath(screenshotpath));
+			extentTest.log(Status.FAIL , "Test Case FAIL 2" + extentTest.addScreenCaptureFromPath(screenshotpath));
+			
+		}
+		else if(result.getStatus() == ITestResult.SKIP)
+		{
+			extentTest.log(Status.SKIP, "Test case Skip is" + result.getName());
+		}
+		else if(result.getStatus() == ITestResult.SUCCESS)
+		{
+			extentTest.log(Status.PASS, "Test Case PASSED is" + result.getName());
+			
+			String screenshotpath = this.getScreenshot(driver, result.getName());
+			//extentTest.log(Status.PASS , "Test Case Passed " + extentTest.addScreencastFromPath(screenshotpath));
+			extentTest.log(Status.PASS , "Test Case Passed 2 " + extentTest.addScreenCaptureFromPath(screenshotpath));
+			
+			extentTest.ad
+		}
+		
+		driver.quit();
+	}
+}
+
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************
+		
+		//Maven - Build Automation Tool - Maven Project creation - Comes with Eclipse.
+		//Other examples of build automation tool - ANT, Gradle
+		//Follow installation steps from mkyong.com, set M2_HOME and MAVEN_HOME environment variables
+		//Maven project has three major steps:
+			1> maven-compile-plugins  : For maven compiler
+			2> maven-surefire-lugins : For running tests
+			3> maven resources : For creating executable file such as JAR, WAR or EAR.
+		
+		//Install and run from command prompt using following maven commands
+		>>mvn version -- To check MVN version and installation success
+		>> mvn clean install  -- To build and execute the maven project
+		>> mvn test -- to execute the test cases
+		//To skip the test case execution and only build maven project
+		>>mvn package -DskipTests
+		To skip test case another method:
+		Set the property in pom.xml as maven.text.skip.true 
+		>>mvn package -Dmaven.test.skip=true
+		
+		
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8</version>
+			<scope>test</scope>
+		</dependency>
+
+	   <dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+		</dependency> 
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************
+Read from Properties file
+
+url=https://www.amazon.in/
+category_xpath=//span[text()='Category']
+book_xpath=//span[text()='Books & Audible']
+fiction_xpath=//span[text()='Fiction Books']
+
+public static Properties prop;
+		try {
+			prop = new Properties();
+			FileInputStream fis = new FileInputStream("C:\\Users\\Preety Sehrawat\\Desktop\\Testing frameworks\\TestNGFramework\\ExtentReportScreenshot\\config\\Amazon.properties");
+			prop.load(fis);
+		}
+		catch(IOException e)
+		{
+			e.getMessage();
+		}
+		
+driver.get(prop.getProperty("url"));
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************RRest Assure API Calls test
+
+Dependancy
+
+<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+<dependency>
+    <groupId>io.rest-assured</groupId>
+    <artifactId>rest-assured</artifactId>
+    <version>3.0.6</version>
+    <scope>test</scope>
+</dependency>
+
+
+Add class as public class GetCallBdd() in test folder
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+public class GetCallBdd()
+{
+	@Test 
+	public void test_1()
+	{
+	//given().
+	//When().
+	//then().
+	//assert()
+	
+	given().
+	when().
+		get("http://ergast.com/api/f1/2017/circuits.json").
+	then().
+		assertThat().
+		statusCode(200).
+		and().
+		body("...",hasSize(20)).
+		and().
+		header("content-length", equalTo("4551").
+	}
+}
+
+
+
+
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************		
+		//TestNG jar files - Installation
+  Install Cucumber:
+  
+  http://cucumber.github.com/cucumber-eclipse/update-site
+  
+  Install TestNG:
+  
+  http://beust.com/eclipse/		
+		
+		
+		
+		
+****************************************************************************************************************************************************************
+		Dependancy forJUNIT
+****************************************************************************************************************************************************************
+	//Cucumber JAR files	
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+		</dependency>		
+				<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>4.2.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>1.2.5</version>
+			<scope>test</scope>
+		</dependency>   
+		<!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-jvm-deps -->
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-jvm-deps</artifactId>
+			<version>1.0.6</version>
+			<scope>provided</scope>
+		</dependency>
+				<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-jvm</artifactId>
+			<version>2.0.0</version>
+			<type>pom</type>
+		</dependency> 
+
+		Feature: Free CRM Login Feature
+
+Scenario Outline: Free CRM Login Test Scenario
+
+Given user is already on Login Page
+When title of login page is Free CRM
+Then user enters "<username>" and "<password>"
+Then user clicks on login button
+Then user is on home page
+Then Close the browser
+
+
+Examples:
+	| username | password |
+	| naveenk  | test@123 |
+
+				 @Then("^user enters \"(.*)\" and \"(.*)\"$")
+	 public void user_enters_username_and_password(String username, String password){
+	 driver.findElement(By.name("username")).sendKeys(username);
+	 driver.findElement(By.name("password")).sendKeys(password);
+	 
+OR
+
+Scenario Outline: Free CRM Login Test Scenario
+
+Given user is already on Login Page
+When title of login page is Free CRM
+Then user enters username and password
+| naveenk | test@123 |
+Then user clicks on login button
+Then user is on home page
+Then Close the browser
+		
+				 @Then("^user enters username and password$")
+	 public void user_enters_username_and_password(DataTable credentials){
+	 List<<List<String>> data = credentials.raw();
+	 driver.findElement(By.name("username")).sendKeys(data.get(0).get(0));
+	 driver.findElement(By.name("password")).sendKeys(data.get(0).get(1));
+	 }
+
+OR Data Table with maps
+
+Then user enters username and password
+	| username | password |
+	| naveenk  | test@123 |
+	| naveen2  | test@456 |
+	
+	
+@Then("^user enters username and password$")
+	 public void user_enters_username_and_password(DataTable credentials){
+	 for(Map<String,String> data : credentiala.asMaps(String
+	 driver.findElement(By.name("username")).sendKeys(data.get(0).get(0));
+	 driver.findElement(By.name("password")).sendKeys(data.get(0).get(1));
+****************************************************************************************************************************************************************
+****************************************************************************************************************************************************************				
+		package guru99;
+import io.appium.java_client.android.*;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+public class TestCase2
+{
+	public static AndroidDriver driver;
+	public static void main(String args[])
+	{
+		try
+		{
+			DesiredCapabilities caps = new DesiredCapabilities();
+			caps.setJavascriptEnabled(true);
+			caps.setCapability("app",System.getProperty("user.dir")+"\\Resources\\com.vector.guru99.apk"); //Provide apk file path as in your local drive 
+			caps.setCapability("deviceName","Galaxy S");
+			caps.setCapability("deviceVesrsion", "4.3");
+			driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"),caps);
+			driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+			
+			Set<String> allElementsText = new HashSet<String>();
+			
+			/* Home Page Verification */
+			if(driver.findElement(By.id("android:id/home")).isDisplayed())
+			{
+				System.out.println(" Guru 99 App Home Page is displayed ");
+			}
+			
+			/* Click on SAP Course in Course Category */
+			driver.findElement(By.name("Course Category")).click();
+			List<WebElement> courseList = driver.findElements(By.id("com.vector.guru99:id/lblListHeader"));
+			courseList.get(0).click();
+			
+			/* Child Elements count Verification */
+			List<WebElement>sapChildElements = driver.findElements(By.id("com.vector.guru99:id/lblListItem"));
+			for(WebElement element: sapChildElements)
+			{
+				String text = element.getText();
+				allElementsText.add(text);
+			}
+			driver.scrollTo("SAP BI");
+			List<WebElement>sapChildElements2 = driver.findElements(By.id("com.vector.guru99:id/lblListItem"));
+			for(WebElement element: sapChildElements2)
+			{
+				String text = element.getText();
+				allElementsText.add(text);
+			}
+			
+			for(String s : allElementsText)
+			{
+				System.out.println(s);
+			}
+			
+			int childElementsCount = allElementsText.size();
+			if(childElementsCount == 11)
+			{
+				System.out.println("Sap course Sub Contents are equal ");
+			}
+			
+		}
+		catch (Exception E)
+		{
+			E.printStackTrace();
+		}
+		driver.quit();
+	}
+	
+}
